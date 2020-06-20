@@ -388,6 +388,7 @@ def read_sql_query(
 def read_sql(
     sql,
     con,
+    schema=None,
     index_col=None,
     coerce_float=True,
     params=None,
@@ -402,6 +403,7 @@ def read_sql(
 def read_sql(
     sql,
     con,
+    schema=None,
     index_col=None,
     coerce_float=True,
     params=None,
@@ -415,6 +417,7 @@ def read_sql(
 def read_sql(
     sql,
     con,
+    schema=None,
     index_col=None,
     coerce_float=True,
     params=None,
@@ -490,15 +493,17 @@ def read_sql(
         )
 
     try:
-        _is_table_name = pandas_sql.has_table(sql)
+        print(f"the _is_table_name is search begins, using {sql} as the sql")  # TODO: remove!
+        _is_table_name = pandas_sql.has_table(sql, schema=schema)
     except Exception:
         # using generic exception to catch errors from sql drivers (GH24988)
         _is_table_name = False
 
     if _is_table_name:
-        pandas_sql.meta.reflect(only=[sql])
+        pandas_sql.meta.reflect(only=[sql], schema=schema)
         return pandas_sql.read_table(
             sql,
+            schema=schema,
             index_col=index_col,
             coerce_float=coerce_float,
             parse_dates=parse_dates,
@@ -1860,3 +1865,4 @@ def get_schema(frame, name, keys=None, con=None, dtype=None):
     """
     pandas_sql = pandasSQL_builder(con=con)
     return pandas_sql._create_sql_schema(frame, name, keys=keys, dtype=dtype)
+
